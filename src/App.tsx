@@ -2,6 +2,7 @@ import "./App.css";
 import Home from "./pages/Home";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import PokemonPage from "./pages/PokemonPage.tsx";
+import { PokemonProvider } from "./Data/PokemonContext.tsx";
 
 function App() {
   const router = createBrowserRouter([
@@ -20,7 +21,10 @@ function App() {
     },
   ]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <PokemonProvider>
+      <RouterProvider router={router} />;
+    </PokemonProvider>);
 }
 
 export default App;
