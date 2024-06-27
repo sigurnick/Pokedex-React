@@ -23,8 +23,8 @@ function App() {
 
   return (
     <PokemonProvider>
-      <RouterProvider router={router} />;
-    </PokemonProvider>);
+      <RouterProvider router={router} />
+    </PokemonProvider>)
 }
 
 export default App;

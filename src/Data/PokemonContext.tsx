@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // context/PokemonContext.tsx
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { Pokemon } from '../Interfaces/Pokemon';
@@ -5,9 +6,10 @@ import { Pokemon } from '../Interfaces/Pokemon';
 interface PokemonContextType {
   pokemonList: Pokemon[];
   loadMorePokemon: () => void;
-  getPokemonById: (id:number) => Pokemon | undefined
+  getPokemonById: (id:number) => any
   loading: boolean;
   hasMore: boolean;
+  typeColorsBg: any
 }
 
 const PokemonContext = createContext<PokemonContextType | undefined>(undefined);
@@ -17,10 +19,29 @@ export const PokemonProvider = ({ children }: { children: ReactNode }) => {
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const typeColorsBg: { [key: string]: string } = {
+    normal: "bg-normal",
+    fire: "bg-fire",
+    water: "bg-water",
+    electric: "bg-electric",
+    grass: "bg-grass",
+    ice: "bg-ice",
+    fighting: "bg-fighting",
+    poison: "bg-poison",
+    ground: "bg-ground",
+    flying: "bg-flying",
+    psychic: "bg-psychic",
+    bug: "bg-bug",
+    rock: "bg-rock",
+    ghost: "bg-ghost",
+    dragon: "bg-dragon",
+    dark: "bg-dark",
+    steel: "bg-steal",
+    fairy: "bg-fairy",
+  };
 
   useEffect(() => {
-    const fetchPokemonList = async () => {
-      if (loading) return; // Prevenzione del doppio caricamento
+    const fetchPokemonList = async () => {      if (loading) return; // Prevenzione del doppio caricamento
       setLoading(true);
 
       try {
@@ -67,12 +88,27 @@ export const PokemonProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const getPokemonById = (id: number) => {
-    return pokemonList.find(pokemon => pokemon.id === id);
+  const getPokemonById = async (id: number) => {
+    const pokemonInData = pokemonList.find(pokemon => pokemon.id === id);
+    if (pokemonInData) {
+      return pokemonInData
+    } else {
+      try {
+        console.log('fatch pokemon');
+        
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}/`);
+        const responseData = await response.json();
+        return responseData
+      } catch (error) {
+        console.log('Error getting pokemon info',error);
+        
+      } 
+     
+    }
   };
 
   return (
-    <PokemonContext.Provider value={{ pokemonList, loadMorePokemon, loading, hasMore, getPokemonById}}>
+    <PokemonContext.Provider value={{ pokemonList, loadMorePokemon, loading, hasMore, getPokemonById, typeColorsBg}}>
       {children}
     </PokemonContext.Provider>
   );
