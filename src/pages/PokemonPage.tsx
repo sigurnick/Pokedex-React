@@ -3,27 +3,39 @@ import { useParams } from "react-router-dom";
 import { Pokemon } from "../Interfaces/Pokemon";
 import { usePokemon } from "../Data/PokemonContext";
 import { FastAverageColor } from "fast-average-color";
+import { PokemonSpecies } from "../Interfaces/PokemonSpecies";
+import { PokemonInfoSelected } from "../Interfaces/PokemonInfoSelected";
+import PokemonInfoAbout from "../components/PokemonInfoSelected/PokemonInfoAbout";
+import PokemonInfoStats from "../components/PokemonInfoSelected/PokemonInfoStats";
+import PokemonInfoMoves from "../components/PokemonInfoSelected/PokemonInfoMoves";
+import PokemonInfoEvolution from "../components/PokemonInfoSelected/PokemonInfoEvolution";
 
 function PokemonPage() {
-  const { getPokemonById, typeColorsBg } = usePokemon();
+  const { getPokemonById, typeColorsBg, getPokemonSpeciesById } = usePokemon();
   const [pokemon, setPokemon] = useState<Pokemon>();
+  const [pokemonSpecies, setPokemonSpecies] = useState<PokemonSpecies>();
   const [bgColor, setBgColor] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [infoSelected, setInfoSelected] = useState<PokemonInfoSelected>(
+    PokemonInfoSelected.ABOUT
+  );
   const params = useParams<{ pokemonId: string }>();
 
   useEffect(() => {
-    
     const fetchPkemon = async () => {
       if (params.pokemonId) {
-        const pokemon = await getPokemonById(parseInt(params.pokemonId!));
+        const pokemonId: number = parseInt(params.pokemonId);
+        const pokemon = await getPokemonById(pokemonId);
+        const pokemonSpecies = await getPokemonSpeciesById(pokemonId);
         setPokemon(pokemon);
+        setPokemonSpecies(pokemonSpecies);
         setImageUrl(
           pokemon?.sprites.other?.["official-artwork"].front_default || ""
         );
         console.log(pokemon);
       }
-    }
-    fetchPkemon()
+    };
+    fetchPkemon();
   }, [getPokemonById, params.pokemonId]);
 
   useEffect(() => {
@@ -35,15 +47,37 @@ function PokemonPage() {
           pokemon?.sprites.other?.["official-artwork"].front_default || ""
         )
         .then((color) => {
-          console.log(color);
-  
           setBgColor(color.rgb);
         })
         .catch((e) => {
           console.log(e);
         });
     }
-  },[imageUrl]);
+  }, [imageUrl]);
+
+  const changeInfoSelected = (infoSelected: PokemonInfoSelected) => {
+    setInfoSelected(infoSelected);
+  };
+
+  const getComponentSelected = () => {
+    let content;
+
+    switch (infoSelected) {
+      case PokemonInfoSelected.ABOUT:
+        content = <PokemonInfoAbout pokemonSpecies={pokemonSpecies!} />;
+        break;
+      case PokemonInfoSelected.STATS:
+        content = <PokemonInfoStats pokemon={pokemon!} />;
+        break;
+      case PokemonInfoSelected.MOVES:
+        content = <PokemonInfoMoves pokemon={pokemon!} />;
+        break;
+      case PokemonInfoSelected.EVOLUTION:
+        content = <PokemonInfoEvolution pokemon={pokemon!} />;
+        break;
+    }
+    return content;
+  };
 
   function formatPokemonId(id: number) {
     return id.toString().padStart(3, "0");
@@ -54,6 +88,7 @@ function PokemonPage() {
 
   return (
     <div>
+      {/* -------- TOP SECTION ------- */}
       <div className="bg-gray-100  h-[400px] w-full">
         <div
           style={{ backgroundColor: bgColor }}
@@ -109,32 +144,69 @@ function PokemonPage() {
           </div>
         </div>
 
-<div className="flex flex-col justify-center items-center">
-
-        {pokemon && pokemon.name ? (
-          <div className="fles justify-center pt-8 text-2xl text-black font-bold">{capitalizeFirstLetter(pokemon.name)}</div>
-        ) : (
-          <div className="fles justify-center pt-8 text-2xl text-black font-bold">...</div>
-        )}
-        
-        {/* Type */}
-        {typeColorsBg ? (
-
-        <div className="flex gap-2 text-base">
-          {pokemon?.types.map((type) => (
-            <div
-              key={type.type.name}
-              className={`${
-                typeColorsBg[type.type.name] || "bg-gray-300"
-              } py-1 px-4 rounded-xl`}
-            >
-              {type.type.name.toUpperCase()}
+        <div className="flex flex-col justify-center items-center">
+          {pokemon && pokemon.name ? (
+            <div className="fles justify-center pt-8 text-2xl text-black font-bold">
+              {capitalizeFirstLetter(pokemon.name)}
             </div>
-          ))}
-        </div>
-        ) : <></>}
-</div>
+          ) : (
+            <div className="fles justify-center pt-8 text-2xl text-black font-bold">
+              ...
+            </div>
+          )}
 
+          {/* Type */}
+          {typeColorsBg ? (
+            <div className="flex gap-2 text-base">
+              {pokemon?.types.map((type) => (
+                <div
+                  key={type.type.name}
+                  className={`${
+                    typeColorsBg[type.type.name] || "bg-gray-300"
+                  } py-1 px-4 rounded-xl`}
+                >
+                  {type.type.name.toUpperCase()}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <></>
+          )}
+        </div>
+      </div>
+
+      {/* -------- INFO SECTION -------- */}
+      <div className="w-full bg-white rounded-t-xl p-2 mt-4">
+        {/* Static menu */}
+        <div className="flex justify-center gap-6 text-black font-semibold text-xl">
+          <button
+            className="border-b-2 hover:cursor-pointer hover:border-black"
+            onClick={() => changeInfoSelected(PokemonInfoSelected.ABOUT)}
+          >
+            About
+          </button>
+          <button
+            className="border-b-2 hover:cursor-pointer hover:border-black"
+            onClick={() => changeInfoSelected(PokemonInfoSelected.STATS)}
+          >
+            Stats
+          </button>
+          <button
+            className="border-b-2 hover:cursor-pointer hover:border-black"
+            onClick={() => changeInfoSelected(PokemonInfoSelected.MOVES)}
+          >
+            Moves
+          </button>
+          <button
+            className="border-b-2 hover:cursor-pointer hover:border-black"
+            onClick={() => changeInfoSelected(PokemonInfoSelected.EVOLUTION)}
+          >
+            Evolution
+          </button>
+        </div>
+
+        {/* Dynamic component selected */}
+        <div className="p-2">{getComponentSelected()}</div>
       </div>
     </div>
   );

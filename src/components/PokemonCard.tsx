@@ -60,8 +60,7 @@ function PokemonCard({ pokemon }: PokemonCardProps) {
 
   return (
     <div
-   
-      className="w-full rounded flex items-center justify-between  gap-3"
+      className="w-full rounded flex items-center justify-between  gap-3 hover:cursor-pointer hover:scale-105 transition-all"
       style={{ backgroundColor: bgColor }}
       onClick={() => handleCardClick(pokemon.id)}
     >

@@ -2,11 +2,11 @@
 // context/PokemonContext.tsx
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { Pokemon } from '../Interfaces/Pokemon';
-
 interface PokemonContextType {
   pokemonList: Pokemon[];
   loadMorePokemon: () => void;
   getPokemonById: (id:number) => any
+  getPokemonSpeciesById: (id:number) => any
   loading: boolean;
   hasMore: boolean;
   typeColorsBg: any
@@ -94,21 +94,28 @@ export const PokemonProvider = ({ children }: { children: ReactNode }) => {
       return pokemonInData
     } else {
       try {
-        console.log('fatch pokemon');
-        
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}/`);
         const responseData = await response.json();
         return responseData
       } catch (error) {
-        console.log('Error getting pokemon info',error);
-        
+        console.log('Error getting pokemon info',error);  
       } 
-     
     }
   };
 
+  const getPokemonSpeciesById = async (id: number) => {
+      try {
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}/`);
+        const responseData = await response.json();
+        return responseData
+      } catch (error) {
+        console.log('Error getting pokemon species',error);  
+      } 
+    
+  };
+
   return (
-    <PokemonContext.Provider value={{ pokemonList, loadMorePokemon, loading, hasMore, getPokemonById, typeColorsBg}}>
+    <PokemonContext.Provider value={{ pokemonList, loadMorePokemon, loading, hasMore, getPokemonById, getPokemonSpeciesById, typeColorsBg}}>
       {children}
     </PokemonContext.Provider>
   );
