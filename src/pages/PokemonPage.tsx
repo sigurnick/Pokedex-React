@@ -12,7 +12,12 @@ import PokemonInfoMoves from "../components/PokemonInfoSelected/PokemonInfoMoves
 import PokemonInfoEvolution from "../components/PokemonInfoSelected/PokemonInfoEvolution";
 
 function PokemonPage() {
-  const { getPokemonById, typeColorsBg, getPokemonSpeciesById } = usePokemon();
+  const {
+    getPokemonById,
+    typeColorsBg,
+    getPokemonSpeciesById,
+    getPokemonTypeIcon,
+  } = usePokemon();
   const [pokemon, setPokemon] = useState<Pokemon>();
   const [pokemonSpecies, setPokemonSpecies] = useState<PokemonSpecies>();
   const [bgColor, setBgColor] = useState("");
@@ -184,9 +189,14 @@ function PokemonPage() {
                   key={type.type.name}
                   className={`${
                     typeColorsBg[type.type.name] || "bg-gray-300"
-                  } py-1 px-4 rounded-xl`}
+                  } py-1 px-4 rounded-xl flex gap-1 items-center`}
                 >
+                  <div className="w-4 h-4">
+                    {getPokemonTypeIcon(type.type.name)}
+                  </div>
+                  <div className="text-center  align-center">
                   {type.type.name.toUpperCase()}
+                  </div>
                 </div>
               ))}
             </div>

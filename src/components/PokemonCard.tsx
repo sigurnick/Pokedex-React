@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import { Pokemon } from "../Interfaces/Pokemon";
 import { FastAverageColor } from "fast-average-color";
 import { Link, useNavigate } from "react-router-dom";
+import { usePokemon } from "../Data/PokemonContext";
 
 interface PokemonCardProps {
   pokemon: Pokemon;
 }
 
 function PokemonCard({ pokemon }: PokemonCardProps) {
+  const { getPokemonTypeIcon } = usePokemon();
+
   const imageUrl =
     pokemon.sprites?.other?.["official-artwork"].front_default || "";
   const [bgColor, setBgColor] = useState("");
@@ -96,8 +99,11 @@ function PokemonCard({ pokemon }: PokemonCardProps) {
               key={type.type.name}
               className={`${
                 typeColors[type.type.name] || "bg-gray-300"
-              } py-1 px-4 rounded`}
-            >
+              } py-1 px-4 rounded flex items-center gap-1 justify-center`}
+            > 
+            <span className="w-3 h-3">
+            {getPokemonTypeIcon(type.type.name)}
+            </span>
               {type.type.name.toUpperCase()}
             </div>
           ))}

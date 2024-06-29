@@ -2,11 +2,13 @@
 // context/PokemonContext.tsx
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { Pokemon } from '../Interfaces/Pokemon';
+
 interface PokemonContextType {
   pokemonList: Pokemon[];
   loadMorePokemon: () => void;
   getPokemonById: (id:number) => any
   getPokemonSpeciesById: (id:number) => any
+  getPokemonTypeIcon: (type:string) => any
   loading: boolean;
   hasMore: boolean;
   typeColorsBg: any
@@ -20,6 +22,7 @@ export const PokemonProvider = ({ children }: { children: ReactNode }) => {
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  
   const typeColorsBg: { [key: string]: string } = {
     normal: "bg-normal",
     fire: "bg-fire",
@@ -136,8 +139,14 @@ export const PokemonProvider = ({ children }: { children: ReactNode }) => {
     
   };
 
+  const getPokemonTypeIcon = (type: string) => {
+    const iconPath = `../assets/PokemonTypeIcons/${type}.svg`;
+    console.log('path', iconPath);
+    return <img src={iconPath} alt={`${type} icon`} />;
+  }
+
   return (
-    <PokemonContext.Provider value={{ pokemonList, loadMorePokemon, loading, hasMore, getPokemonById, getPokemonSpeciesById, typeColorsBg, typeColorsText}}>
+    <PokemonContext.Provider value={{ pokemonList, loadMorePokemon, loading, hasMore, getPokemonById, getPokemonSpeciesById, typeColorsBg, typeColorsText, getPokemonTypeIcon}}>
       {children}
     </PokemonContext.Provider>
   );
