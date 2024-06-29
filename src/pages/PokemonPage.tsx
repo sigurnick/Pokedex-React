@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Pokemon } from "../Interfaces/Pokemon";
@@ -67,7 +68,9 @@ function PokemonPage() {
         content = <PokemonInfoAbout pokemonSpecies={pokemonSpecies!} />;
         break;
       case PokemonInfoSelected.STATS:
-        content = <PokemonInfoStats pokemon={pokemon!} />;
+        content = (
+          <PokemonInfoStats pokemon={pokemon!} pokemonColor={bgColor} />
+        );
         break;
       case PokemonInfoSelected.MOVES:
         content = <PokemonInfoMoves pokemon={pokemon!} />;
@@ -85,6 +88,24 @@ function PokemonPage() {
   function capitalizeFirstLetter(string: string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
+
+  // Components
+
+  const MenuButton = ({ isSelected, onClick, label }: any) => {
+    return (
+      <button
+        className="hover:cursor-pointer hover:border-black hover:border-b-2"
+        style={{
+          color: isSelected ? bgColor : "",
+          borderBottomWidth: isSelected ? "2px" : "",
+          borderColor: isSelected ? bgColor : "",
+        }}
+        onClick={onClick}
+      >
+        {label}
+      </button>
+    );
+  };
 
   return (
     <div>
@@ -157,7 +178,7 @@ function PokemonPage() {
 
           {/* Type */}
           {typeColorsBg ? (
-            <div className="flex gap-2 text-base">
+            <div className="flex gap-2 text-base mt-2">
               {pokemon?.types.map((type) => (
                 <div
                   key={type.type.name}
@@ -177,36 +198,31 @@ function PokemonPage() {
 
       {/* -------- INFO SECTION -------- */}
       <div className="w-full bg-white rounded-t-xl p-2 mt-4">
-        {/* Static menu */}
         <div className="flex justify-center gap-6 text-black font-semibold text-xl">
-          <button
-            className="border-b-2 hover:cursor-pointer hover:border-black"
+          <MenuButton
+            isSelected={infoSelected === PokemonInfoSelected.ABOUT}
             onClick={() => changeInfoSelected(PokemonInfoSelected.ABOUT)}
-          >
-            About
-          </button>
-          <button
-            className="border-b-2 hover:cursor-pointer hover:border-black"
+            label="About"
+          />
+          <MenuButton
+            isSelected={infoSelected === PokemonInfoSelected.STATS}
             onClick={() => changeInfoSelected(PokemonInfoSelected.STATS)}
-          >
-            Stats
-          </button>
-          <button
-            className="border-b-2 hover:cursor-pointer hover:border-black"
+            label="Stats"
+          />
+          <MenuButton
+            isSelected={infoSelected === PokemonInfoSelected.MOVES}
             onClick={() => changeInfoSelected(PokemonInfoSelected.MOVES)}
-          >
-            Moves
-          </button>
-          <button
-            className="border-b-2 hover:cursor-pointer hover:border-black"
+            label="Moves"
+          />
+          <MenuButton
+            isSelected={infoSelected === PokemonInfoSelected.EVOLUTION}
             onClick={() => changeInfoSelected(PokemonInfoSelected.EVOLUTION)}
-          >
-            Evolution
-          </button>
+            label="Evolution"
+          />
         </div>
 
         {/* Dynamic component selected */}
-        <div className="p-2">{getComponentSelected()}</div>
+        <div className="px-2 py-4">{getComponentSelected()}</div>
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ interface PokemonContextType {
   loading: boolean;
   hasMore: boolean;
   typeColorsBg: any
+  typeColorsText: any
 }
 
 const PokemonContext = createContext<PokemonContextType | undefined>(undefined);
@@ -39,6 +40,27 @@ export const PokemonProvider = ({ children }: { children: ReactNode }) => {
     steel: "bg-steal",
     fairy: "bg-fairy",
   };
+  const typeColorsText: { [key: string]: string } = {
+    normal: "text-normal",
+    fire: "text-fire",
+    water: "text-water",
+    electric: "text-electric",
+    grass: "text-grass",
+    ice: "text-ice",
+    fighting: "text-fighting",
+    poison: "text-poison",
+    ground: "text-ground",
+    flying: "text-flying",
+    psychic: "text-psychic",
+    bug: "text-bug",
+    rock: "text-rock",
+    ghost: "text-ghost",
+    dragon: "text-dragon",
+    dark: "text-dark",
+    steel: "text-steal",
+    fairy: "text-fairy",
+  };
+
 
   useEffect(() => {
     const fetchPokemonList = async () => {      if (loading) return; // Prevenzione del doppio caricamento
@@ -115,7 +137,7 @@ export const PokemonProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <PokemonContext.Provider value={{ pokemonList, loadMorePokemon, loading, hasMore, getPokemonById, getPokemonSpeciesById, typeColorsBg}}>
+    <PokemonContext.Provider value={{ pokemonList, loadMorePokemon, loading, hasMore, getPokemonById, getPokemonSpeciesById, typeColorsBg, typeColorsText}}>
       {children}
     </PokemonContext.Provider>
   );
